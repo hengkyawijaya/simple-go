@@ -1,0 +1,10 @@
+http_server:
+  port: 8081
+grpc_server:
+  port: 9000
+cron_server:
+  cron_hello:
+    schedule: "*/1 * * * *"
+repository:
+  ip_info:
+    endpoint: "https://ipinfo.io/json"
