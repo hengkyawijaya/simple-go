@@ -19,7 +19,7 @@ type ServerFunc func(uc *usecase.Usecase, wg sync.WaitGroup, repo *repository.Re
 func main() {
 	ctx := buildContext()
 	repo := repository.NewRepository(ctx)
-	uc := usecase.NewUsecase(ctx)
+	uc := usecase.NewUsecase(ctx, repo)
 
 	listServerFunc := []ServerFunc{
 		http_server.DeliverHTTP,

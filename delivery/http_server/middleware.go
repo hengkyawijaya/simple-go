@@ -35,7 +35,17 @@ func NewAuthMiddleware(authUc usecase.AuthUsecase) *authMiddleware {
 
 func (a authMiddleware) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		isAuth := a.authUc.IsAuthorized()
+		authorization := r.Header.Get("Authorization")
+		// validate bearer token
+		if len(authorization) < 7 {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		// remove bearer prefix
+		token := authorization[7:]
+
+		isAuth := a.authUc.IsAuthorized(r.Context(), token)
 		fmt.Println("AUTH:", isAuth)
 		if !isAuth {
 			w.WriteHeader(http.StatusUnauthorized)

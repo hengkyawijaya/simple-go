@@ -33,16 +33,37 @@ type CronHello struct {
 }
 
 type RepositoryConfig struct {
-	IPInfo IPInfoRepositoryConfig `yaml:"ip_info"`
+	IPInfo   IPInfoRepositoryConfig `yaml:"ip_info"`
+	Database DatabaseConfig         `yaml:"database"`
 }
 
 type IPInfoRepositoryConfig struct {
 	Endpoint string
 }
 
+type DatabaseConfig struct {
+	Host     string
+	Port     string
+	Username string
+	Password string
+	Name     string
+}
+
 func NewConfig(ctx context.Context) *Config {
 	env := ctx.Value(constant.EnvContextKey)
 	filePath := fmt.Sprintf("./files/config/main.%s.yaml", env)
+	config := readConfig(filePath)
+
+	filePathSecret := fmt.Sprintf("./files/config/secret.%s.yaml", env)
+	configSecret := readConfig(filePathSecret)
+
+	// override config with secret
+	config.Repository.Database = configSecret.Repository.Database
+
+	return &config
+}
+
+func readConfig(filePath string) Config {
 	fmt.Println("read config from", filePath)
 
 	yamlFile, err := ioutil.ReadFile(filePath)
@@ -55,8 +76,7 @@ func NewConfig(ctx context.Context) *Config {
 	if err != nil {
 		panic(err)
 	}
-
-	return &config
+	return config
 }
 
 func (c *Config) ReadConfig() *Config {

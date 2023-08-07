@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/hengkyawijaya/simple-go/repository"
 	usecase_auth "github.com/hengkyawijaya/simple-go/usecase/auth"
 	usecase_hello "github.com/hengkyawijaya/simple-go/usecase/hello"
 )
@@ -15,7 +16,7 @@ type HelloUsecase interface {
 
 // AuthUsecase is an interface for authorization
 type AuthUsecase interface {
-	IsAuthorized() bool
+	IsAuthorized(ctx context.Context, token string) bool
 }
 
 // Usecase is a struct that contains all usecase interfaces
@@ -25,9 +26,9 @@ type Usecase struct {
 }
 
 // NewUsecase is a constructor for Usecase
-func NewUsecase(ctx context.Context) *Usecase {
+func NewUsecase(ctx context.Context, repo *repository.Repository) *Usecase {
 	return &Usecase{
 		HelloUsecase: usecase_hello.NewUsecase(ctx),
-		AuthUsecase:  usecase_auth.NewUsecase(ctx),
+		AuthUsecase:  usecase_auth.NewUsecase(ctx, repo),
 	}
 }
